@@ -2,6 +2,7 @@ import { put, delay } from 'redux-saga/effects';
 import * as actions from '../actions/index';
 import axios from 'axios';
 import {authFail, authStart, authSuccess, checkAuthTimeout} from "../actions/auth";
+import {logout} from "../actions/index";
 
 
 export function* logoutSaga(action) {
@@ -40,4 +41,20 @@ export function* authUserSaga(action) {
         console.log(error);
         yield put(actions.authFail(error.response.data.error));
     };
+}
+
+export function* authCheckStateSaga(action) {
+    const token = yield localStorage.getItem('token');
+    if(!token) {
+        yield put(actions.logout())
+    } else {
+        const expirationDate = yield new Date(localStorage.getItem('expirationDate'));
+        const userId = localStorage.getItem('userId');
+        if(expirationDate <=  new Date()) {
+            yield put(actions.logout())
+        } else {
+            yield put(actions.authSuccess(token, userId));
+            yield put(actions.checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000));
+        }
+    }
 }
