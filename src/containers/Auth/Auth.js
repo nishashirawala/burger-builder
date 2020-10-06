@@ -8,6 +8,7 @@ import classes from './Auth.css';
 import * as actions from '../../store/actions/index';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import {updateObject, checkValidity} from '../../shared/utility';
+import burgerBuilder from "../../store/reducers/burgerBuilder";
 
 const auth = props => {
 
@@ -43,12 +44,13 @@ const auth = props => {
        }
    );
    const [isSignUp, setIsSignUp] = useState(true);
+   const {buildingBurger, authRedirectPath, onSetAuthRedirectPath} = props;
 
    useEffect(() => {
-       if(!props.buildingBurger && props.authRedirectPath !== '/') {
-           props.onSetAuthRedirectPath();
+       if(!buildingBurger && authRedirectPath !== '/') {
+           onSetAuthRedirectPath();
        }
-   }, [])
+   }, [burgerBuilder, authRedirectPath, onSetAuthRedirectPath]);
 
     const inputChangedHandler = (event, controlName) => {
         const updatedControls = updateObject(authForm, {
